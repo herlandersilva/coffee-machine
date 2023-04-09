@@ -1,0 +1,301 @@
+type: edu
+files:
+- name: src/machine/Main.kt
+  visible: true
+  text: |
+    package machine
+
+    fun main() {
+        println("Hello, world!")
+    }
+  learner_created: false
+- name: test/CoffeeMachineTest.java
+  visible: false
+  text: |
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+    import org.hyperskill.hstest.testcase.TestCase;
+
+    import java.util.Arrays;
+    import java.util.List;
+
+
+    class TestClue {
+        boolean cond;
+        int num;
+        boolean showTests;
+        TestClue(boolean c, int n, boolean showTests) {
+            cond = c;
+            num = n;
+            this.showTests = showTests;
+        }
+    }
+
+    public class CoffeeMachineTest extends StageTest<TestClue> {
+
+        @Override
+        public List<TestCase<TestClue>> generate() {
+            return Arrays.asList(
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 0, true))
+                    .setInput("300\n65\n111\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 2, true))
+                    .setInput("600\n153\n100\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 2, true))
+                    .setInput("1400\n150\n100\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 2, true))
+                    .setInput("1400\n1500\n45\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(false, 2, true))
+                    .setInput("599\n250\n200\n10"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 867, true))
+                    .setInput( "345640\n43423\n23234\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(false, 1548, true))
+                    .setInput("345640\n434230\n23234\n19246"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(false, 172, true))
+                    .setInput( "34564\n43423\n23234\n19246"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 0, false))
+                    .setInput("399\n112\n111\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 3, false))
+                    .setInput("2400\n249\n100\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 1, false))
+                    .setInput("1400\n1500\n44\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(false, 2, false))
+                    .setInput("500\n250\n200\n10"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 171, false))
+                    .setInput("34564\n43423\n23234\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(true, 1547, false))
+                    .setInput("345640\n434230\n23234\n1"),
+
+                new TestCase<TestClue>()
+                    .setAttach(new TestClue(false, 868, false))
+                    .setInput("345640\n43423\n23234\n19246")
+
+            );
+        }
+
+        @Override
+        public CheckResult check(String reply, TestClue clue) {
+            String[] lines = reply.trim().split(":");
+            String userOutput = lines[lines.length - 1].trim();
+            String loweredOutput = userOutput.toLowerCase();
+            boolean ans = clue.cond;
+            int amount = clue.num;
+            if (ans) {
+                if (amount > 0) {
+                    boolean isCorrect =
+                        loweredOutput.contains(Integer.toString(amount))
+                            && loweredOutput.contains("yes");
+
+                    if (isCorrect) {
+                        return CheckResult.correct();
+                    } else {
+
+                        String rightOutput =
+                            "Yes, I can make that amount of coffee" +
+                                " (and even " + amount + " more than that)";
+
+                        if (clue.showTests) {
+                            return new CheckResult(false,
+                                "Your output:\n" +
+                                    userOutput +
+                                    "\nRight output:\n" +
+                                    rightOutput);
+                        } else {
+                            return CheckResult.wrong("");
+                        }
+                    }
+                }
+
+                String rightOutput =
+                    "Yes, I can make that amount of coffee";
+                if (loweredOutput.contains(rightOutput.toLowerCase())) {
+                    return CheckResult.correct();
+                } else {
+                    if (clue.showTests) {
+                        return new CheckResult(false,
+                            "Your output:\n" +
+                                userOutput +
+                                "\nRight output:\n" +
+                                rightOutput);
+                    } else {
+                        return CheckResult.wrong("");
+                    }
+                }
+
+            } else {
+                boolean cond1 = loweredOutput.contains("no");
+                boolean cond2 = loweredOutput.contains(Integer.toString(amount));
+
+                if (cond1 && cond2) {
+                    return CheckResult.correct();
+                } else {
+
+                    String rightOutput = "No, I can make only " +
+                        amount +" cup(s) of coffee";
+
+                    if (clue.showTests) {
+                        return new CheckResult(false,
+                            "Your output:\n" +
+                                userOutput +
+                                "\nRight output:\n" +
+                                rightOutput);
+                    } else {
+                        return CheckResult.wrong("");
+                    }
+                }
+            }
+        }
+    }
+  learner_created: false
+- name: src/machine/CoffeeMachine.kt
+  visible: true
+  text: |-
+    package machine
+
+    class CoffeeMachine() {
+        private var cups: Int = 0
+
+        fun `How many ingredients to make x cups of coffee`() = this.howManyIngredientsNeedToMakeCoffeeXCups()
+        fun `Starting to make a coffee`() = println("Starting to make a coffee")
+        fun `Grinding coffee beans`() = println("Grinding coffee beans")
+        fun `Boiling water`() = println("Boiling water")
+        fun `Mixing boiled water with crushed coffee beans`() = println("Mixing boiled water with crushed coffee beans")
+        fun `Pouring coffee into the cup`() = println("Pouring coffee into the cup")
+        fun `Pouring some milk into the cup`() = println("Pouring some milk into the cup")
+        fun `Coffee is ready!`() = println("Coffee is ready!")
+
+        override fun toString(): String {
+            return "For %d cups of coffee you will need:".format(cups)
+        }
+
+        private fun howManyIngredientsNeedToMakeCoffeeXCups() {
+            this.cups = Util.ask("Write how many cups of coffee you will need:").toInt()
+            println(this.toString())
+            val stdCoffeeCup = StandardCoffeeCup()
+            val customWater: Volume = Volume(
+                stdCoffeeCup.waterVolume.ingredient,
+                stdCoffeeCup.waterVolume.quantity * cups.toUInt(),
+                stdCoffeeCup.waterVolume.unit
+            )
+            val customMilk: Volume = Volume(
+                stdCoffeeCup.milkVolume.ingredient,
+                stdCoffeeCup.milkVolume.quantity * cups.toUInt(),
+                stdCoffeeCup.milkVolume.unit
+            )
+            val customCoffeeBeans: Volume = Volume(
+            stdCoffeeCup.coffeeVolume.ingredient,
+            stdCoffeeCup.coffeeVolume.quantity * cups.toUInt(),
+            stdCoffeeCup.coffeeVolume.unit
+            )
+            val customCoffeeCup = CustomCoffeeCup(customWater, customMilk, customCoffeeBeans)
+            println(customCoffeeCup.waterVolume)
+            println(customCoffeeCup.milkVolume)
+            println(customCoffeeCup.coffeeVolume)
+        }
+    }
+
+    abstract class CoffeeCup {
+        abstract val waterVolume: Volume
+        abstract val milkVolume: Volume
+        abstract val coffeeVolume: Volume
+    }
+
+    class CustomCoffeeCup(
+        val _waterVolume: Volume,
+        val _milkVolume: Volume,
+        val _coffeeVolume: Volume
+    ) : CoffeeCup() {
+        override val waterVolume = _waterVolume
+        override val milkVolume = _milkVolume
+        override val coffeeVolume = _coffeeVolume
+    }
+
+    class StandardCoffeeCup : CoffeeCup() {
+        override val waterVolume = Volume(Ingredient.WATER, 200U, Unit.ML)
+        override val milkVolume = Volume(Ingredient.MILK, 50U, Unit.ML)
+        override val coffeeVolume = Volume(Ingredient.COFFEE_BEANS, 15U, Unit.GM)
+    }
+  learner_created: true
+- name: src/machine/Util.kt
+  visible: true
+  text: |-
+    package machine
+
+    object Util {
+        private var sendToCheck = true
+
+        fun ask(title: String): String {
+            println(title)
+            return readln().trim()
+        }
+
+        fun readln(): String {
+            if (!sendToCheck) {
+                print("> ")
+            }
+            return kotlin.io.readln()
+        }
+
+        fun disableToSend() { this.sendToCheck = false }
+        fun enableToSend() { this.sendToCheck = true }
+    }
+  learner_created: true
+- name: src/machine/Volume.kt
+  visible: true
+  text: |-
+    package machine
+
+    data class Volume(val ingredient: Ingredient, val quantity: UInt, val unit: machine.Unit) {
+        override fun toString(): String {
+            return "%d %s of %s".format(quantity.toInt(), unit, ingredient.desc)
+        }
+    }
+  learner_created: true
+- name: src/machine/Unit.kt
+  visible: true
+  text: |-
+    package machine
+
+    enum class Ingredient(val desc: String) {
+        WATER("water"),
+        MILK("milk"),
+        COFFEE_BEANS("coffee beans")
+    }
+
+    enum class Unit(val desc: String) {
+        ML("ml"),
+        GM("g")
+    }
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/5661#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Fri, 07 Apr 2023 05:18:19 UTC"
+record: 3
